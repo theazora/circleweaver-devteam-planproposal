@@ -58,11 +58,23 @@
       color: var(--accent);
       font-weight: 700;
     }
-    header.hero p.author {
+    header.hero .meta-top {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      flex-wrap: wrap;
       margin: 0 0 0.85rem;
+    }
+    header.hero p.author {
+      margin: 0;
       font-size: 0.78rem;
       color: var(--muted);
       letter-spacing: 0.02em;
+    }
+    header.hero p.updated {
+      margin: 0;
+      font-size: 0.72rem;
+      color: var(--muted);
     }
     header.hero .logo {
       display: block;
@@ -202,7 +214,10 @@
 <body>
   <div class="wrap">
     <header class="hero">
-      <p class="author">Thea B.</p>
+      <div class="meta-top">
+        <p class="author">Thea B.</p>
+        <p class="updated">Updated Aug 31, 2026 · 4:34 PM</p>
+      </div>
       <img class="logo" src="./weaver-logo.png" alt="Weaver" />
       <h1>Rebuild plan proposal</h1>
       <p class="lede">
@@ -270,6 +285,13 @@
         </tbody>
       </table>
       <p class="muted">After the semester: video meetings, live presence, richer feeds, AI helpers.</p>
+      <p class="muted">
+        Most of the current UI lives under <code>spring2/</code> (user home, workspace pages in
+        <code>jsp/</code>, site admin). We'll dig into those folders to map screens to APIs and
+        decide what gets rebuilt first. The old mobile-only flow in <code>spring2/wmf/</code>
+        (separate <code>*.wmf</code> meeting pages) goes away; meetings move into one responsive
+        React module instead.
+      </p>
     </section>
 
     <section id="teams">
@@ -464,6 +486,17 @@ flowchart TB
         <li>CSRF token endpoint</li>
         <li>HttpOnly / Secure cookies</li>
         <li>Structured JSON errors</li>
+      </ul>
+      <h3>Ops notes</h3>
+      <ul class="compact">
+        <li>
+          <strong>SSO / login email:</strong> messages from the identity provider (SSOFI) sometimes
+          land in spam. Worth flagging for users and reviewing sender/reputation with backend.
+        </li>
+        <li>
+          <strong>MongoDB:</strong> used today mainly for the email archive (<code>weaver.email</code>).
+          If we improve notification delivery or dig into bounced/spam mail, that's likely where we look.
+        </li>
       </ul>
       <h3>Nice later</h3>
       <div class="diagram">
