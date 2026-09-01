@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notes · Circle Weaver Rebuild</title>
+  <style>
+    :root {
+      --bg: #eef0f8;
+      --card: #ffffff;
+      --ink: #1c1917;
+      --muted: #57534e;
+      --line: #e4e2ef;
+      --accent: #5b3cc4;
+      --accent-soft: #ede9fe;
+      --heading: #3b2a8a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at top left, rgba(124, 58, 237, 0.28) 0%, transparent 48%),
+        radial-gradient(ellipse at top right, rgba(37, 99, 235, 0.26) 0%, transparent 46%),
+        radial-gradient(ellipse at bottom, rgba(99, 102, 241, 0.12) 0%, transparent 55%),
+        linear-gradient(160deg, #ebe4ff 0%, #e8f0ff 45%, #eef2ff 100%);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      padding: 0.5rem 1rem;
+      background: var(--heading);
+      color: white;
+      z-index: 100;
+    }
+    .skip-link:focus {
+      left: 0.5rem;
+      top: 0.5rem;
+    }
+    nav.page-tabs {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 0 1.25rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 12px rgba(28, 25, 23, 0.04);
+    }
+    nav.page-tabs ul {
+      list-style: none;
+      margin: 0 auto;
+      padding: 0;
+      max-width: 880px;
+      display: flex;
+      gap: 0.25rem;
+    }
+    nav.page-tabs a {
+      display: block;
+      padding: 0.85rem 1rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+    nav.page-tabs a:hover {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+    nav.page-tabs a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    nav.page-tabs a[aria-current="page"] {
+      color: var(--heading);
+      border-bottom-color: var(--accent);
+    }
+    .wrap {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+    header.hero {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 30px rgba(28, 25, 23, 0.06);
+    }
+    header.hero .meta-top {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 0 0 0.85rem;
+    }
+    header.hero p.author {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.35rem, 3vw, 1.7rem);
+      color: var(--heading);
+      font-weight: 650;
+    }
+    .lede {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+    section.notes-body {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.75rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(28, 25, 23, 0.04);
+    }
+    section.notes-body p {
+      margin: 0 0 1rem;
+      font-size: 1.02rem;
+    }
+    section.notes-body p:last-child {
+      margin-bottom: 0;
+    }
+    section.notes-body a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    section.notes-body a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .signoff {
+      margin-top: 1.25rem !important;
+      color: var(--muted);
+    }
+    code {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.88em;
+      background: #f5f5f4;
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="page-tabs" aria-label="Plan sections">
+    <ul>
+      <li><a href="./Circle-Weaver-Rebuild-Plan.html">Plan</a></li>
+      <li><a href="./Notes.html" aria-current="page">Notes</a></li>
+    </ul>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <div class="meta-top">
+        <p class="author">Thea B.</p>
+      </div>
+      <h1>Notes</h1>
+      <p class="lede">Some thoughts ahead of our UI/UX sync this week. I wanted to get dev ideas on the table early.</p>
+    </header>
+
+    <section class="notes-body" id="main">
+      <p>
+        We met as a dev team Monday, Aug. 31 at 3:00 PM PST to talk through a lot of this together.
+        I believe Jeanne has notes from that meeting that should be going into Weaver soon after we
+        wrap everything up, so definitely check those out too for the fuller group read on what we
+        discussed. I'll link them here once they're up.
+      </p>
+      <p>
+        I've been thinking a lot about where Circle Weaver could go, and I put the plan page together
+        mostly as a way to, umm, get that conversation started.
+      </p>
+      <p>
+        For me, the direction looks like it could be pretty simple, but clean and upgraded in
+        practice. Looking through the repository, there's already a lot this product does really
+        well, especially on the backend, and I don't want us to lose that. The Java APIs and domain
+        logic are solid. Where things feel more stuck is the Angular/JSP frontend (which is, uhh,
+        sort of outdated, but also very cool in its own way) and the separate mobile path living in
+        <code>spring2/wmf/</code>. I can tell there is a lot of work placed in this part of the
+        project.
+      </p>
+      <p>
+        My thought is that we modernize that experience with React/Next.js, build it mobile-first as
+        Jeanne mentioned, and work with what's already here instead of throwing everything out and
+        starting over.
+      </p>
+      <p>
+        A little context on where I'm coming from personally: my background leans pretty heavily
+        toward backend and systems work: Linux, SQL, networking, homelab/server tinkering, and all
+        that. I enjoy working on Java apps, even though it's not my most familiar stack, so this
+        codebase has felt pretty approachable to me so far.
+      </p>
+      <p>
+        I've also learned that other members of the dev group bring a lot to the table on the other
+        side of the house too, frontend, UI/UX, design, marketing assets, and more, and I'm genuinely
+        excited to learn from everyone as we get further into this.
+      </p>
+      <p>
+        When UI/UX meets this week Thursday, I mostly want to bring some of the dev thinking into
+        the conversation early so we're not designing or building in a vacuum. We've got a good mix
+        of full stack skills on the team, and we're ready to contribute wherever it makes sense.
+      </p>
+      <p>
+        We also care about the bigger picture here, not just picking up notes and disappearing into
+        code. I was thinking.. perhaps we could have at least one dev rep sitting in on each team's
+        meetings when it makes sense, just so we can keep context flowing in all the different
+        directions and stay aligned on where things are headed as we start building.
+      </p>
+      <p>
+        For the dev team, as far as build order goes, what makes the most sense to me right now is
+        starting with the app shell and auth, then moving into meetings (replacing
+        <code>wmf/</code>), workspace home, and user home. Ideally, this can work alongside however
+        the UI/UX team coordinates those changes through wireframes in Figma, or whatever tools and
+        process are decided make the most sense.
+      </p>
+      <p>
+        I'll keep digging through the repo and <code>spring2/</code> in the meantime and, uhh..
+        figuring out what maps to what. Once those core pieces are in a good place, we should be able
+        to actually start using the new app for real work and gradually move away from the old UI
+        instead of trying to flip everything over at once!
+      </p>
+      <p>
+        Really excited to talk through all of this with everyone this week. A final statement I would
+        like to make in this note is that this plan isn't meant to be any kind of final word on where
+        we go, I just wanted to contribute to a starting point and a collection of my initial thoughts
+        from this week. I'm so excited to work on this and I am looking forward to hearing everyone's
+        input and seeing how we shape what this project becomes together.
+      </p>
+      <p>
+        Thanks, everyone!
+      </p>
+      <p class="signoff">
+        - <a href="https://theazora.dev" rel="noopener noreferrer">Thea</a>
+      </p>
+    </section>
+
+    <footer>Preliminary plan</footer>
+  </div>
+</body>
+</html>

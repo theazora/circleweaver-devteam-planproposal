@@ -42,6 +42,58 @@
       margin: 0 auto;
       padding: 2rem 1.25rem 4rem;
     }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      padding: 0.5rem 1rem;
+      background: var(--heading);
+      color: white;
+      z-index: 100;
+    }
+    .skip-link:focus {
+      left: 0.5rem;
+      top: 0.5rem;
+    }
+    nav.page-tabs {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 0 1.25rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 12px rgba(28, 25, 23, 0.04);
+    }
+    nav.page-tabs ul {
+      list-style: none;
+      margin: 0 auto;
+      padding: 0;
+      max-width: 880px;
+      display: flex;
+      gap: 0.25rem;
+    }
+    nav.page-tabs a {
+      display: block;
+      padding: 0.85rem 1rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+    nav.page-tabs a:hover {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+    nav.page-tabs a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    nav.page-tabs a[aria-current="page"] {
+      color: var(--heading);
+      border-bottom-color: var(--accent);
+    }
     header.hero {
       background: var(--card);
       border: 1px solid var(--line);
@@ -212,7 +264,16 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="page-tabs" aria-label="Plan sections">
+    <ul>
+      <li><a href="./Circle-Weaver-Rebuild-Plan.html" aria-current="page">Plan</a></li>
+      <li><a href="./Notes.html">Notes</a></li>
+    </ul>
+  </nav>
+
+  <div class="wrap" id="main">
     <header class="hero">
       <div class="meta-top">
         <p class="author">Thea B.</p>
