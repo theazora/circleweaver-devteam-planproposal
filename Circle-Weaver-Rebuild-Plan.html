@@ -178,6 +178,59 @@
     }
     p { margin: 0 0 0.75rem; }
     .muted { color: var(--muted); }
+    .repo-note {
+      display: block;
+      margin: 0.75rem 0 0;
+      padding: 0.65rem 0.75rem;
+      border-left: 3px solid #b42318;
+      background: #fef2f2;
+      color: #9f1239;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .repo-note code {
+      background: rgba(255, 255, 255, 0.65);
+      color: #881337;
+    }
+    .repo-note-list {
+      list-style: none;
+      margin: 0.75rem 0 0;
+      padding: 0.65rem 0.75rem;
+      border-left: 3px solid #b42318;
+      background: #fef2f2;
+      color: #9f1239;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .repo-note-list li {
+      margin-bottom: 0.65rem;
+    }
+    .repo-note-list li:last-child {
+      margin-bottom: 0;
+    }
+    .repo-note-list code {
+      background: rgba(255, 255, 255, 0.65);
+      color: #881337;
+    }
+    section.in-progress {
+      background: #f4f4f5;
+      border: 1px dashed #a1a1aa;
+    }
+    section.in-progress h2 {
+      border-bottom-color: #d4d4d8;
+    }
+    .status-badge {
+      display: inline-block;
+      margin: 0 0 0.85rem;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 650;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #52525b;
+      background: #e4e4e7;
+      border-radius: 6px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -346,13 +399,13 @@
         </tbody>
       </table>
       <p class="muted">After the semester: video meetings, live presence, richer feeds, AI helpers.</p>
-      <p class="muted">
+      <small class="repo-note">
         Most of the current UI lives under <code>spring2/</code> (user home, workspace pages in
         <code>jsp/</code>, site admin). We'll dig into those folders to map screens to APIs and
         decide what gets rebuilt first. The old mobile-only flow in <code>spring2/wmf/</code>
         (separate <code>*.wmf</code> meeting pages) goes away; meetings move into one responsive
         React module instead.
-      </p>
+      </small>
     </section>
 
     <section id="teams">
@@ -540,8 +593,9 @@ flowchart TB
       </table>
     </section>
 
-    <section id="asks">
-      <h2>9. Asks and later ideas</h2>
+    <section id="asks" class="in-progress" aria-labelledby="asks-heading">
+      <p class="status-badge">In progress · suggestion</p>
+      <h2 id="asks-heading">9. Asks and later ideas</h2>
       <h3>Need from backend before pilot</h3>
       <ul class="compact">
         <li>CSRF token endpoint</li>
@@ -549,7 +603,7 @@ flowchart TB
         <li>Structured JSON errors</li>
       </ul>
       <h3>Ops notes</h3>
-      <ul class="compact">
+      <ul class="repo-note-list compact">
         <li>
           <strong>SSO / login email:</strong> messages from the identity provider (SSOFI) sometimes
           land in spam. Worth flagging for users and reviewing sender/reputation with backend.
