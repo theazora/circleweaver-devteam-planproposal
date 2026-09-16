@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Restructure plan · Circle Weaver</title>
+  <script src="./mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      securityLevel: "loose",
+      flowchart: {
+        curve: "basis",
+        htmlLabels: true,
+        nodeSpacing: 55,
+        rankSpacing: 65,
+        padding: 20,
+        useMaxWidth: false
+      },
+      themeVariables: {
+        fontSize: "22px",
+        fontFamily: "Segoe UI, system-ui, sans-serif",
+        primaryColor: "#ede9fe",
+        primaryTextColor: "#1c1917",
+        primaryBorderColor: "#5b3cc4",
+        lineColor: "#57534e",
+        secondaryColor: "#ecfdf5",
+        tertiaryColor: "#fffbeb",
+        clusterBkg: "#f8fafc",
+        clusterBorder: "#94a3b8",
+        titleColor: "#3b2a8a",
+        edgeLabelBackground: "#ffffff"
+      }
+    });
+  </script>
+  <style>
+    :root {
+      --bg: #eef0f8;
+      --card: #ffffff;
+      --ink: #1c1917;
+      --muted: #57534e;
+      --line: #e4e2ef;
+      --accent: #5b3cc4;
+      --accent-soft: #ede9fe;
+      --heading: #3b2a8a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at top left, rgba(124, 58, 237, 0.28) 0%, transparent 48%),
+        radial-gradient(ellipse at top right, rgba(37, 99, 235, 0.26) 0%, transparent 46%),
+        radial-gradient(ellipse at bottom, rgba(99, 102, 241, 0.12) 0%, transparent 55%),
+        linear-gradient(160deg, #ebe4ff 0%, #e8f0ff 45%, #eef2ff 100%);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      padding: 0.5rem 1rem;
+      background: var(--heading);
+      color: white;
+      z-index: 100;
+    }
+    .skip-link:focus { left: 0.5rem; top: 0.5rem; }
+    nav.page-tabs {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 0 1.25rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 12px rgba(28, 25, 23, 0.04);
+    }
+    nav.page-tabs ul {
+      list-style: none;
+      margin: 0 auto;
+      padding: 0;
+      max-width: 1040px;
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+    nav.page-tabs a {
+      display: block;
+      padding: 0.85rem 0.9rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+    nav.page-tabs a:hover { color: var(--accent); background: var(--accent-soft); }
+    nav.page-tabs a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    nav.page-tabs a[aria-current="page"] {
+      color: var(--heading);
+      border-bottom-color: var(--accent);
+    }
+    header.hero {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 30px rgba(28, 25, 23, 0.06);
+    }
+    header.hero .meta-top {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 0 0 0.85rem;
+    }
+    header.hero p.author { margin: 0; font-size: 0.78rem; color: var(--muted); }
+    header.hero p.updated { margin: 0; font-size: 0.72rem; color: var(--muted); }
+    header.hero .logo {
+      display: block;
+      height: 42px;
+      width: auto;
+      margin: 0 0 0.85rem;
+    }
+    h1 {
+      margin: 0 0 0.65rem;
+      font-size: clamp(1.35rem, 3vw, 1.7rem);
+      line-height: 1.2;
+      color: var(--heading);
+      font-weight: 650;
+    }
+    .lede { margin: 0; color: var(--muted); font-size: 1.05rem; }
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+    }
+    nav.toc strong { display: block; margin-bottom: 0.5rem; }
+    nav.toc ol { margin: 0; padding-left: 1.25rem; }
+    nav.toc a { color: var(--accent); text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.5rem 1.5rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.3rem;
+      color: var(--heading);
+      border-bottom: 2px solid var(--accent-soft);
+      padding-bottom: 0.4rem;
+    }
+    h3 { margin: 1.1rem 0 0.4rem; font-size: 1.02rem; color: var(--ink); }
+    p { margin: 0 0 0.75rem; }
+    .muted { color: var(--muted); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      margin: 0.6rem 0 0.85rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.5rem 0.6rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f3f0ff; color: var(--heading); font-weight: 650; }
+    .diagram {
+      background: #fafaf9;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.25rem 1rem 1.5rem;
+      overflow-x: auto;
+      margin: 0.85rem 0;
+      -webkit-overflow-scrolling: touch;
+    }
+    .diagram-compact {
+      max-width: 34rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .diagram-label {
+      margin: 0 0 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: 0.02em;
+    }
+.mermaid {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    .mermaid svg {
+      width: auto !important;
+      max-width: none;
+      height: auto !important;
+    }
+    .diagram-compact .mermaid svg {
+      max-width: 100%;
+    }
+    .mermaid .nodeLabel,
+    .mermaid .edgeLabel,
+    .mermaid .cluster-label,
+    .mermaid foreignObject,
+    .mermaid foreignObject div,
+    .mermaid foreignObject span,
+    .mermaid foreignObject p {
+      font-size: 1.15rem !important;
+      line-height: 1.45 !important;
+      font-weight: 600 !important;
+    }
+    .mermaid .node rect,
+    .mermaid .node polygon,
+    .mermaid .node circle {
+      stroke-width: 2px !important;
+    }
+
+    .flag {
+      display: inline-block;
+      padding: 0.12rem 0.45rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      vertical-align: middle;
+      margin-right: 0.35rem;
+    }
+    .flag-good {
+      color: #166534;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+    }
+    .flag-watch {
+      color: #854d0e;
+      background: #fef9c3;
+      border: 1px solid #fde047;
+    }
+    .flag-important {
+      color: #9f1239;
+      background: #ffe4e6;
+      border: 1px solid #fda4af;
+    }
+    .callout-good {
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      border-radius: 0 10px 10px 0;
+      padding: 0.8rem 1rem;
+      margin: 0.85rem 0;
+      color: #14532d;
+    }
+    .callout-watch {
+      background: #fefce8;
+      border-left: 4px solid #ca8a04;
+      border-radius: 0 10px 10px 0;
+      padding: 0.8rem 1rem;
+      margin: 0.85rem 0;
+      color: #713f12;
+    }
+    .callout-important, .repo-note {
+      background: #fef2f2;
+      border-left: 4px solid #e11d48;
+      border-radius: 0 10px 10px 0;
+      padding: 0.8rem 1rem;
+      margin: 0.85rem 0;
+      color: #9f1239;
+    }
+    .callout-good strong, .callout-watch strong, .callout-important strong {
+      color: inherit;
+    }
+    tr.row-good td:first-child { box-shadow: inset 4px 0 0 #16a34a; }
+    tr.row-watch td:first-child { box-shadow: inset 4px 0 0 #ca8a04; }
+    tr.row-important td:first-child { box-shadow: inset 4px 0 0 #e11d48; }
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 0.85rem;
+      align-items: center;
+      margin: 0.75rem 0 1rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .callout {
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 0.8rem 1rem;
+      margin: 0.85rem 0;
+    }
+    .callout strong { color: var(--heading); }
+    ul.compact { margin: 0.4rem 0 0.75rem; padding-left: 1.2rem; }
+    ul.compact li { margin-bottom: 0.35rem; }
+    ol.compact { margin: 0.4rem 0 0.75rem; padding-left: 1.25rem; }
+    ol.compact li { margin-bottom: 0.35rem; }
+    code {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 0.88em;
+      background: #f5f5f4;
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+    }
+    @media print {
+      body { background: white; }
+      section, header.hero, nav.toc { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="page-tabs" aria-label="Plan sections">
+    <ul>
+      <li><a href="./Circle-Weaver-Rebuild-Plan.html">Plan</a></li>
+      <li><a href="./Restructure-Plan.html" aria-current="page">Restructure plan</a></li>
+      <li><a href="./Analysis.html">Analysis</a></li>
+      <li><a href="./Notes.html">Notes</a></li>
+    </ul>
+  </nav>
+
+  <div class="wrap" id="main">
+    <header class="hero">
+      <div class="meta-top">
+        <p class="author">Thea B.</p>
+        <p class="updated">Updated Sep 16, 2026 · suggestion for team of 5-6</p>
+      </div>
+      <img class="logo" src="./weaver-logo.png" alt="Weaver" />
+      <h1>Restructure plan</h1>
+      <p class="lede">
+        My suggested weekly plan for our assigned team: move files, check in, then upgrade, and keep everything working
+        through the marketing / UI-UX handoff on <strong>Nov 13, 2026</strong>.
+        I’ve dug into this kind of repo work the most on our team right now, so this is my advice
+        to build from together. Written so newer teammates and future developers can jump in and follow along.
+      </p>
+    </header>
+
+    <nav class="toc">
+      <strong>Contents</strong>
+      <ol>
+        <li><a href="#big-picture">Big picture</a></li>
+        <li><a href="#how-we-work">Suggested weekly workflow</a></li>
+        <li><a href="#m1">Milestone 1: Map the house</a></li>
+        <li><a href="#m2">Milestone 2: Move content out of code</a></li>
+        <li><a href="#m3">Milestone 3: One clean backbone</a></li>
+        <li><a href="#m4">Milestone 4: Slim repo + questions</a></li>
+        <li><a href="#after">After Nov 13</a></li>
+        <li><a href="#calendar">One-page calendar</a></li>
+      </ol>
+    </nav>
+
+    <section id="big-picture">
+      <h2>1. Big picture</h2>
+      <p>
+        My suggestion is we start <strong>Mon Sep 15, 2026</strong> with four milestones, two weeks each.
+        In my view we should not redesign the product yet. We clean the house so design can move in.
+        Some of us may keep working on this after the current assignment, and other developers will
+        pick it up later, so it helps if we leave a repo and plan that a new person can actually understand.
+      </p>
+      <div class="diagram" role="group" aria-labelledby="diag-r1">
+        <p class="diagram-label" id="diag-r1">Eight weeks → handoff</p>
+        <pre class="mermaid">
+flowchart LR
+  subgraph M1["Milestone 1\nSep 15-28"]
+    A[Map and label\nwhat exists]
+  end
+  subgraph M2["Milestone 2\nSep 29-Oct 12"]
+    B[Move content\nout of code]
+  end
+  subgraph M3["Milestone 3\nOct 13-26"]
+    C[One Next.js\nbackbone]
+  end
+  subgraph M4["Milestone 4\nOct 27-Nov 9"]
+    D[Clean repo +\nstakeholder Qs]
+  end
+  H[Nov 13\nUI/UX handoff]
+  M1 --> M2 --> M3 --> M4 --> H
+        </pre>
+      </div>
+      <p><strong>What I’d count as “done by Nov 13”:</strong></p>
+      <div class="legend-row" aria-label="Color key">
+        <span><span class="flag flag-good">Green</span> keep / solid</span>
+        <span><span class="flag flag-watch">Yellow</span> move or decide</span>
+        <span><span class="flag flag-important">Red</span> important / archive</span>
+      </div>
+      <ul class="compact">
+        <li>We understand <code>cognoscenti-master</code></li>
+        <li>Duplicates are listed and mostly archived</li>
+        <li>Tutorials / marketing live as <strong>data</strong>, not random HTML</li>
+        <li><code>circleweaver-app</code> is where we work; old Weaver API still powers data</li>
+        <li>Stakeholder questions on login + profiles are sent</li>
+        <li>Final visuals wait for Nov 13; that handoff steers late November</li>
+      </ul>
+      <p class="muted">
+        Deeper file-by-file notes from my analysis live in the repo as <code>cognoscenti-restructure-notes.md</code>
+        and on the <a href="./Analysis.html">Analysis</a> tab.
+      </p>
+    </section>
+
+    <section id="how-we-work">
+      <h2>2. Suggested weekly workflow</h2>
+      <p class="muted">This is the loop that has worked well for me on repos like this, especially while a lot of us are still getting comfortable.</p>
+      <ol class="compact">
+        <li><strong>Pick</strong> this week’s files from the list (better not to freestyle here).</li>
+        <li><strong>Move or copy</strong> into the new place. Never delete the old copy yet.</li>
+        <li><strong>Team check-in:</strong> show what moved, click through, confirm it still runs.</li>
+        <li><strong>Only after check-in:</strong> archive old copies, tidy names, small upgrades.</li>
+        <li>Confused? Write it in a shared <code>questions.md</code> instead of guessing.</li>
+      </ol>
+      <div class="diagram" role="group" aria-labelledby="diag-r2">
+        <p class="diagram-label" id="diag-r2">Safe move loop</p>
+        <pre class="mermaid">
+flowchart TD
+  Pick[Pick this week's files] --> Move[Move / copy to new home]
+  Move --> Keep[Leave old files in place]
+  Keep --> Check[Team check-in]
+  Check -->|Still works| Upgrade[Then archive or upgrade]
+  Check -->|Broken| Fix[Fix together, do not delete yet]
+  Fix --> Check
+        </pre>
+      </div>
+    </section>
+
+    <section id="m1">
+      <h2>3. Milestone 1: Map the house</h2>
+      <p class="muted"><strong>Sep 15 - Sep 28</strong> · Suggested goal: everyone can point at what each big folder is for. No big deletes yet.</p>
+
+      <h3>Week 1 (Sep 15-21): Label &amp; inventory</h3>
+      <table>
+        <thead>
+          <tr><th>Who</th><th>Simple task</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Pair A</td><td>List what’s inside <code>cognoscenti-master/weaverWar</code> (the real app)</td></tr>
+          <tr><td>Pair B</td><td>List what’s inside <code>circleweaver_com</code> (marketing + tutorials)</td></tr>
+          <tr><td>Pair C / flex</td><td>List <code>docker</code>, <code>documentation</code>, <code>testdata</code></td></tr>
+        </tbody>
+      </table>
+      <p><strong>Deliverable:</strong> shared inventory with columns: folder · what it is · keep / move / archive · owner</p>
+      <div class="diagram" role="group" aria-labelledby="diag-r3">
+        <p class="diagram-label" id="diag-r3">What we’re labeling</p>
+        <pre class="mermaid">
+flowchart TB
+  Root[cognoscenti-master]
+  Root --> W[weaverWar = real product]
+  Root --> C[circleweaver_com = website + tutorials]
+  Root --> D[docker = how they used to run servers]
+  Root --> Doc[documentation = slides / old video]
+  Root --> T[testdata = ancient zip]
+        </pre>
+      </div>
+
+      <h3>Week 2 (Sep 22-28): Milestone 1 check-in</h3>
+      <ul class="compact">
+        <li>Walk the inventory together (30-45 min).</li>
+        <li>Agree on labels (don’t delete red yet):
+          <div class="legend-row" style="margin:0.4rem 0 0">
+            <span><span class="flag flag-good">Green</span> keep</span>
+            <span><span class="flag flag-watch">Yellow</span> move later</span>
+            <span><span class="flag flag-important">Red</span> archive</span>
+          </div>
+        </li>
+        <li>Confirm everyone can open <code>circleweaver-app</code> and <code>cognoscenti-master</code>.</li>
+      </ul>
+      <div class="callout-good"><strong>M1 checkpoint:</strong> inventory exists and the whole team agrees on the labels.</div>
+    </section>
+
+    <section id="m2">
+      <h2>4. Milestone 2: Move content out of code</h2>
+      <p class="muted"><strong>Sep 29 - Oct 12</strong> · Suggested goal: tutorials + policies become data. Old HTML stays until check-in passes.</p>
+
+      <h3>Week 3 (Sep 29-Oct 5): Tutorials → learning posts</h3>
+      <table>
+        <thead>
+          <tr><th>From (old)</th><th>To (new)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>circleweaver_com/TutorialNN.html</code></td>
+            <td><code>circleweaver-app/content/learning/posts/</code></td>
+          </tr>
+          <tr>
+            <td><code>tutorial-files/</code> thumbs &amp; snaps</td>
+            <td><code>circleweaver-app/public/media/learning/</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Keep the same IDs (<code>Tutorial09a</code>, etc.). Split the 23 tutorials across the team.</p>
+      <div class="diagram" role="group" aria-labelledby="diag-r4">
+        <p class="diagram-label" id="diag-r4">Content move</p>
+        <pre class="mermaid">
+flowchart LR
+  HTML[Tutorial HTML] -->|copy content| Post[Learning post files]
+  Thumbs[tutorial-files images] -->|copy| Media[public/media/learning]
+  Post --> Feed[Later: tutorials page reads posts]
+        </pre>
+      </div>
+      <p class="muted">Check-in: open a few new posts; confirm text, YouTube id, image paths. Do <strong>not</strong> delete the HTML yet.</p>
+
+      <h3>Week 4 (Oct 6-12): Marketing / legal + M2 check-in</h3>
+      <table>
+        <thead>
+          <tr><th>From</th><th>To</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>about, Pricing, GetStarted, …</td><td><code>content/marketing/</code> + placeholder pages</td></tr>
+          <tr><td>Policy HTML files</td><td><code>content/legal/</code></td></tr>
+        </tbody>
+      </table>
+      <div class="callout-good"><strong>M2 checkpoint:</strong> tutorials + marketing/legal exist as content in Next, old HTML still backed up, check-in green.</div>
+    </section>
+
+    <section id="m3">
+      <h2>5. Milestone 3: One clean backbone</h2>
+      <p class="muted"><strong>Oct 13 - Oct 26</strong> · Suggested goal: Next.js is where we work; Weaver JSON still serves data so nothing breaks.</p>
+
+      <h3>Week 5 (Oct 13-19): Wire the backbone</h3>
+      <ul class="compact">
+        <li>Make sure <code>circleweaver-app</code> runs for everyone.</li>
+        <li>Keep / improve the <strong>API proxy</strong> (Next → old Weaver JSON; don’t rewrite Java).</li>
+        <li>Add empty folders that match the product: sites, workspaces, meetings, topics, goals, docs, profile.</li>
+        <li>Start <code>docs/folder-map.md</code>: old path → new path.</li>
+      </ul>
+      <div class="diagram" role="group" aria-labelledby="diag-r5">
+        <p class="diagram-label" id="diag-r5">How the backbone talks</p>
+        <pre class="mermaid">
+flowchart LR
+  Browser[Browser] --> Next[circleweaver-app\nNext.js]
+  Next -->|proxy JSON| Weaver[Old Weaver API\nstill running]
+  Next --> Content[content/ + public/media]
+        </pre>
+      </div>
+      <div class="callout-important"><strong>Important guardrail:</strong> if Tomcat/Weaver still serves real data, leave it on. We clean the front and the repo layout first.</div>
+
+      <h3>Week 6 (Oct 20-26): Deduplicate &amp; M3 check-in</h3>
+      <table>
+        <thead>
+          <tr><th>Mark for removal (after check-in)</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr class="row-important"><td>Double <code>jscript</code> vs <code>new_assets/jscript</code></td><td><span class="flag flag-important">Archive after check-in</span> same libraries twice</td></tr>
+          <tr class="row-important"><td>Double <code>node_modules</code> under webapp</td><td><span class="flag flag-important">Archive after check-in</span> not a real modern app install</td></tr>
+          <tr class="row-important"><td>Dreamweaver <code>_notes</code>, heavy slides/mp4 in git</td><td><span class="flag flag-important">Archive after check-in</span> not needed to run the app</td></tr>
+        </tbody>
+      </table>
+      <div class="callout-good"><strong>M3 checkpoint:</strong> Next runs against the proxy, folder map updated, duplicate list agreed, app still functions.</div>
+    </section>
+
+    <section id="m4">
+      <h2>6. Milestone 4: Slim repo + ask smarter questions</h2>
+      <p class="muted"><strong>Oct 27 - Nov 9</strong> · Suggested goal: thinner repo, clear docs, stakeholder questions before design handoff.</p>
+
+      <h3>Week 7 (Oct 27-Nov 2): Clean with a safety net</h3>
+      <ul class="compact">
+        <li>Archive to <code>legacy/</code> or a zip. Don’t silent-delete.</li>
+        <li>Remove only what Milestone 3 marked red <em>and</em> check-in approved.</li>
+        <li>Root README: how to run Next + how to run legacy Weaver if needed.</li>
+        <li>Smoke-test: login path, one workspace page, tutorials readable from new files.</li>
+      </ul>
+      <div class="diagram" role="group" aria-labelledby="diag-r6">
+        <p class="diagram-label" id="diag-r6">Cleanup safety net</p>
+        <pre class="mermaid">
+flowchart TD
+  Approve[Approved red list] --> Archive[Move to legacy/ or zip]
+  Archive --> Smoke[Smoke test app]
+  Smoke -->|OK| Done[Milestone cleanup]
+  Smoke -->|Fail| Restore[Put files back, fix, retry]
+        </pre>
+      </div>
+
+      <h3>Week 8 (Nov 3-9): Stakeholder questions + handoff prep</h3>
+      <p>
+        By now the code should be slimmer. This week is partly waiting on people outside the team,
+        so I’d use that time to ask good questions and lock the backbone.
+      </p>
+      <div class="callout-watch">
+        <strong>Network / login / profiles: questions worth asking stakeholders</strong>
+        <p style="margin:0.65rem 0 0.75rem">
+          From my experience with this kind of stack, I’d look at moving from SSOFI/SSO toward OAuth (with one base account that can link Google, Microsoft, and other providers) because OAuth is a standard pattern newer teammates already know, works internationally (including Dutch users), and is usually simpler to maintain in a React/Next app than keeping a separate SSOFI login WAR in the loop. Longer term, exploring OAuth instead of staying on SSOFI forever also makes sense: it’s a common international login standard, easier to teach on this team, and lets people connect multiple platforms to one base account without running a separate identity app.
+        </p>
+        <ol class="compact" style="margin-top:0.5rem;margin-bottom:0">
+          <li><strong>Login:</strong> keep current <strong>SSO / SSOFI</strong>, or move to simpler <strong>OAuth</strong> (Google / Microsoft / etc. linked to one base account)?</li>
+          <li><strong>Profiles:</strong> today a profile is very dry, almost nothing to showcase someone. What should a clean profile include (bio, skills, posts, learning completed, facilitator info)?</li>
+          <li><strong>Hosting:</strong> where do app, login server, and marketing pages live today, and what can we change without breaking production?</li>
+        </ol>
+      </div>
+      <p class="muted">Capture answers in <code>docs/stakeholder-answers.md</code> so Nov 13 isn’t blocked by guessing.</p>
+      <div class="callout-good"><strong>M4 checkpoint:</strong> repo cleaned/archived per plan, README works for a new teammate, questions sent, team ready for wireframes.</div>
+    </section>
+
+    <section id="after">
+      <h2>7. After Nov 13: design steers us</h2>
+      <p class="muted">My suggested handoff point. After this, UI/UX and marketing set the visual direction and we build on the backbone we cleaned.</p>
+      <div class="diagram" role="group" aria-labelledby="diag-r7">
+        <p class="diagram-label" id="diag-r7">Handoff → direction</p>
+        <pre class="mermaid">
+flowchart LR
+  Backbone[Until Nov 13:\nslim code · solid Next backbone] --> Handoff[Nov 13\nwireframes and ideas]
+  Handoff --> Direction[UI/UX + marketing\nset visual direction]
+  Direction --> Build[Late Nov: implement\ndesigns on our backbone]
+        </pre>
+      </div>
+      <p>
+        We won’t know exact screens, colors, or marketing content until that handoff.
+        <strong>Until then, I’d keep our focus on</strong> slim code, updated infrastructure, and a solid backbone.
+        New moving parts come later.
+      </p>
+      <p class="muted">
+        If there’s idle time in late Nov / Dec while waiting on feedback: optionally improve meetings with a proper
+        <strong>Zoom API</strong> link flow (better than pasting links by hand). A full built-in
+        <strong>WebRTC</strong> meeting service is a future idea only if stakeholders want it, more realistically next year.
+        Not part of this 8-week suggestion. Cleaner, faster workflows come first.
+      </p>
+    </section>
+
+    <section id="calendar">
+      <h2>8. One-page calendar</h2>
+      <p class="muted">Suggested timeline from my analysis. We can adjust as a team once we start moving files.</p>
+      <table>
+        <thead>
+          <tr><th>Window</th><th>M</th><th>Focus</th><th>Check-in</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Sep 15-21</td><td>1</td><td>Inventory &amp; label folders</td><td>End of week</td></tr>
+          <tr><td>Sep 22-28</td><td>1</td><td>Agree keep / move / archive</td><td><strong>M1 complete</strong></td></tr>
+          <tr><td>Sep 29-Oct 5</td><td>2</td><td>Tutorials → <code>content/learning</code></td><td>End of week</td></tr>
+          <tr><td>Oct 6-12</td><td>2</td><td>Marketing/legal → content</td><td><strong>M2 complete</strong></td></tr>
+          <tr><td>Oct 13-19</td><td>3</td><td>Next backbone + API proxy</td><td>End of week</td></tr>
+          <tr><td>Oct 20-26</td><td>3</td><td>Deduplicate list + safe tidy</td><td><strong>M3 complete</strong></td></tr>
+          <tr><td>Oct 27-Nov 2</td><td>4</td><td>Archive / slim + smoke tests</td><td>End of week</td></tr>
+          <tr><td>Nov 3-9</td><td>4</td><td>Stakeholder Qs (SSO, profiles, hosting)</td><td><strong>M4 complete</strong></td></tr>
+          <tr><td><strong>Nov 13</strong></td><td></td><td>UI/UX + marketing handoff</td><td>Design work starts after</td></tr>
+        </tbody>
+      </table>
+      <ul class="compact">
+        <li><span class="flag flag-important">Important</span> <strong>Working app &gt; perfect cleanup.</strong> Old files stay until check-in says archive.</li>
+        <li><span class="flag flag-good">Good habit</span> <strong>Small moves, frequent check-ins</strong> (this is how a newer team finishes without breaking things).</li>
+        <li><span class="flag flag-watch">Timing</span> <strong>Nov 13 is the design starting line</strong>, not “finish the whole product.”</li>
+        <li><span class="flag flag-good">Good habit</span> <strong>Leave a clear trail</strong> for newer teammates and future developers (folder map, README, notes in the repo).</li>
+      </ul>
+    </section>
+
+    <footer>Works offline · keep this folder with mermaid.min.js</footer>
+  </div>
+</body>
+</html>

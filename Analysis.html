@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analysis · Circle Weaver</title>
+  <script src="./mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      securityLevel: "loose",
+      flowchart: {
+        curve: "basis",
+        htmlLabels: true,
+        nodeSpacing: 55,
+        rankSpacing: 65,
+        padding: 20,
+        useMaxWidth: false
+      },
+      themeVariables: {
+        fontSize: "22px",
+        fontFamily: "Segoe UI, system-ui, sans-serif",
+        primaryColor: "#ede9fe",
+        primaryTextColor: "#1c1917",
+        primaryBorderColor: "#5b3cc4",
+        lineColor: "#57534e",
+        secondaryColor: "#ecfdf5",
+        tertiaryColor: "#fffbeb",
+        clusterBkg: "#f8fafc",
+        clusterBorder: "#94a3b8",
+        titleColor: "#3b2a8a",
+        edgeLabelBackground: "#ffffff"
+      }
+    });
+  </script>
+  <style>
+    :root {
+      --bg: #eef0f8;
+      --card: #ffffff;
+      --ink: #1c1917;
+      --muted: #57534e;
+      --line: #e4e2ef;
+      --accent: #5b3cc4;
+      --accent-soft: #ede9fe;
+      --heading: #3b2a8a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at top left, rgba(124, 58, 237, 0.28) 0%, transparent 48%),
+        radial-gradient(ellipse at top right, rgba(37, 99, 235, 0.26) 0%, transparent 46%),
+        radial-gradient(ellipse at bottom, rgba(99, 102, 241, 0.12) 0%, transparent 55%),
+        linear-gradient(160deg, #ebe4ff 0%, #e8f0ff 45%, #eef2ff 100%);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      padding: 0.5rem 1rem;
+      background: var(--heading);
+      color: white;
+      z-index: 100;
+    }
+    .skip-link:focus { left: 0.5rem; top: 0.5rem; }
+    nav.page-tabs {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 0 1.25rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 12px rgba(28, 25, 23, 0.04);
+    }
+    nav.page-tabs ul {
+      list-style: none;
+      margin: 0 auto;
+      padding: 0;
+      max-width: 1040px;
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+    nav.page-tabs a {
+      display: block;
+      padding: 0.85rem 0.9rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+    nav.page-tabs a:hover { color: var(--accent); background: var(--accent-soft); }
+    nav.page-tabs a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    nav.page-tabs a[aria-current="page"] {
+      color: var(--heading);
+      border-bottom-color: var(--accent);
+    }
+    header.hero {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 30px rgba(28, 25, 23, 0.06);
+    }
+    header.hero .meta-top {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 0 0 0.85rem;
+    }
+    header.hero p.author { margin: 0; font-size: 0.78rem; color: var(--muted); }
+    header.hero p.updated { margin: 0; font-size: 0.72rem; color: var(--muted); }
+    header.hero .logo {
+      display: block;
+      height: 42px;
+      width: auto;
+      margin: 0 0 0.85rem;
+    }
+    h1 {
+      margin: 0 0 0.65rem;
+      font-size: clamp(1.35rem, 3vw, 1.7rem);
+      line-height: 1.2;
+      color: var(--heading);
+      font-weight: 650;
+    }
+    .lede { margin: 0; color: var(--muted); font-size: 1.05rem; }
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+    }
+    nav.toc strong { display: block; margin-bottom: 0.5rem; }
+    nav.toc ol { margin: 0; padding-left: 1.25rem; }
+    nav.toc a { color: var(--accent); text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.5rem 1.5rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.3rem;
+      color: var(--heading);
+      border-bottom: 2px solid var(--accent-soft);
+      padding-bottom: 0.4rem;
+    }
+    h3 { margin: 1.1rem 0 0.4rem; font-size: 1.02rem; color: var(--ink); }
+    p { margin: 0 0 0.75rem; }
+    .muted { color: var(--muted); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin: 0.6rem 0 0.85rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.5rem 0.6rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f3f0ff; color: var(--heading); font-weight: 650; }
+    .diagram {
+      background: #fafaf9;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.25rem 1rem 1.5rem;
+      overflow-x: auto;
+      margin: 0.85rem 0;
+      -webkit-overflow-scrolling: touch;
+    }
+    .diagram-lg { padding: 1.35rem 1.1rem 1.75rem; }
+    .diagram-compact {
+      max-width: 34rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .diagram-label {
+      margin: 0 0 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: 0.02em;
+    }
+.mermaid {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    /* Do not stretch SVGs to full width — that made short step charts huge and crowded text on big charts */
+    .mermaid svg {
+      width: auto !important;
+      max-width: none;
+      height: auto !important;
+    }
+    .diagram-compact .mermaid svg {
+      max-width: 100%;
+    }
+    .mermaid .nodeLabel,
+    .mermaid .edgeLabel,
+    .mermaid .cluster-label,
+    .mermaid foreignObject,
+    .mermaid foreignObject div,
+    .mermaid foreignObject span,
+    .mermaid foreignObject p {
+      font-size: 1.15rem !important;
+      line-height: 1.45 !important;
+      font-weight: 600 !important;
+    }
+    .mermaid .node rect,
+    .mermaid .node polygon,
+    .mermaid .node circle {
+      stroke-width: 2px !important;
+    }
+    .view-switch {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin: 1rem 0 0.85rem;
+      padding: 0.3rem;
+      background: #f5f3ff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .view-switch button {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 0.92rem;
+      font-weight: 650;
+      padding: 0.55rem 0.9rem;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+    .view-switch button:hover {
+      color: var(--accent);
+      background: rgba(255, 255, 255, 0.7);
+    }
+    .view-switch button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .view-switch button[aria-selected="true"] {
+      background: var(--card);
+      color: var(--heading);
+      box-shadow: 0 1px 4px rgba(28, 25, 23, 0.08);
+    }
+    .view-panel[hidden] {
+      display: none !important;
+    }
+
+    .flag {
+      display: inline-block;
+      padding: 0.12rem 0.45rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      vertical-align: middle;
+      margin-right: 0.35rem;
+    }
+    .flag-good {
+      color: #166534;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+    }
+    .flag-watch {
+      color: #854d0e;
+      background: #fef9c3;
+      border: 1px solid #fde047;
+    }
+    .flag-important {
+      color: #9f1239;
+      background: #ffe4e6;
+      border: 1px solid #fda4af;
+    }
+    .callout-good {
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      border-radius: 0 10px 10px 0;
+      padding: 0.8rem 1rem;
+      margin: 0.85rem 0;
+      color: #14532d;
+    }
+    .callout-watch {
+      background: #fefce8;
+      border-left: 4px solid #ca8a04;
+      border-radius: 0 10px 10px 0;
+      padding: 0.8rem 1rem;
+      margin: 0.85rem 0;
+      color: #713f12;
+    }
+    .callout-important, .repo-note {
+      background: #fef2f2;
+      border-left: 4px solid #e11d48;
+      border-radius: 0 10px 10px 0;
+      padding: 0.8rem 1rem;
+      margin: 0.85rem 0;
+      color: #9f1239;
+    }
+    .callout-good strong, .callout-watch strong, .callout-important strong {
+      color: inherit;
+    }
+    tr.row-good td:first-child { box-shadow: inset 4px 0 0 #16a34a; }
+    tr.row-watch td:first-child { box-shadow: inset 4px 0 0 #ca8a04; }
+    tr.row-important td:first-child { box-shadow: inset 4px 0 0 #e11d48; }
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 0.85rem;
+      align-items: center;
+      margin: 0.75rem 0 1rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .callout {
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 0.8rem 1rem;
+      margin: 0.85rem 0;
+    }
+    .callout strong { color: var(--heading); }
+    ul.compact { margin: 0.4rem 0 0.75rem; padding-left: 1.2rem; }
+    ul.compact li { margin-bottom: 0.35rem; }
+    code {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 0.88em;
+      background: #f5f5f4;
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    pre.tree {
+      background: #1c1917;
+      color: #f5f5f4;
+      padding: 1rem;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      margin: 0.75rem 0;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+    }
+    @media print {
+      body { background: white; }
+      section, header.hero, nav.toc { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="page-tabs" aria-label="Plan sections">
+    <ul>
+      <li><a href="./Circle-Weaver-Rebuild-Plan.html">Plan</a></li>
+      <li><a href="./Restructure-Plan.html">Restructure plan</a></li>
+      <li><a href="./Analysis.html" aria-current="page">Analysis</a></li>
+      <li><a href="./Notes.html">Notes</a></li>
+    </ul>
+  </nav>
+
+  <div class="wrap" id="main">
+    <header class="hero">
+      <div class="meta-top">
+        <p class="author">Thea B.</p>
+        <p class="updated">Updated Sep 16, 2026 · my cognoscenti-master walkthrough</p>
+      </div>
+      <img class="logo" src="./weaver-logo.png" alt="Weaver" />
+      <h1>Analysis</h1>
+      <p class="lede">
+        How I’m reading the repo so far: what the moving parts look like from my pass through
+        <code>cognoscenti-master</code>, and what we could do together to bring the UI into React / Next.js
+        without rewriting the whole platform before November. I’ve spent the most
+        time in stacks like this on our team right now, so this is my analysis to share and build from,
+        not a finished decision set. Newer teammates and future developers should be able to use it
+        as a starting map.
+      </p>
+    </header>
+
+    <nav class="toc">
+      <strong>Contents</strong>
+      <ol>
+        <li><a href="#three-products">Three products zip-tied together</a></li>
+        <li><a href="#folder-map">Folder map (what I analyzed so far)</a></li>
+        <li><a href="#weaver-war">Inside weaverWar (the platform)</a></li>
+        <li><a href="#spring2">spring2 in detail</a></li>
+        <li><a href="#stack">Bootstrap + AngularJS (overall analysis)</a></li>
+        <li><a href="#into-react">How that could become React</a></li>
+        <li><a href="#timing">What I’d wait on until after November</a></li>
+      </ol>
+    </nav>
+
+    <section id="three-products">
+      <h2>1. Three products zip-tied together</h2>
+      <p>
+        From what I’ve dug through so far, opening <code>cognoscenti-master</code> feels like one giant app,
+        but it reads more like <strong>three pieces</strong> that have been running side by side for years.
+        Start with the simple overview, then open <strong>Specific paths</strong> when you want the exact
+        folders under <code>weaverWar/src/main/webapp/</code> and friends. We can refine this together
+        as we actually move files.
+      </p>
+
+      <div class="view-switch" role="tablist" aria-label="Diagram detail level">
+        <button type="button" role="tab" id="tab-simple" aria-selected="true" aria-controls="panel-simple">
+          Simple overview
+        </button>
+        <button type="button" role="tab" id="tab-paths" aria-selected="false" aria-controls="panel-paths" tabindex="-1">
+          Specific paths
+        </button>
+      </div>
+
+      <div class="view-panel" role="tabpanel" id="panel-simple" aria-labelledby="tab-simple">
+        <div class="diagram diagram-lg" role="group" aria-labelledby="diag-moving-simple">
+          <p class="diagram-label" id="diag-moving-simple">Current moving parts</p>
+          <pre class="mermaid">
+flowchart TB
+  subgraph Static["circleweaver_com"]
+    Mkt[Marketing HTML]
+    Tut[Tutorials + thumbs]
+  end
+  subgraph IdP["SSOFI (separate WAR)"]
+    Login[Login / identity server]
+  end
+  subgraph App["weaverWar (the product)"]
+    JSP[spring2 UI + AngularJS]
+    API[Spring JSON APIs]
+    FS[Sites + users on disk]
+    Mongo[Mongo for email]
+  end
+  User[Browser user] --> Mkt
+  User --> JSP
+  JSP -->|slap.js auth| Login
+  JSP --> API
+  API --> FS
+  API --> Mongo
+  JSP -.->|Tutorial IDs| Tut
+          </pre>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Piece</th><th>Job</th><th>What we could do</th></tr>
+          </thead>
+          <tbody>
+            <tr class="row-good">
+              <td><strong>Weaver</strong> (<code>weaverWar</code>)</td>
+              <td>Sites, workspaces, meetings, topics, docs, users, JSON APIs</td>
+              <td><span class="flag flag-good">Keep</span> system of record for v1</td>
+            </tr>
+            <tr class="row-watch">
+              <td><strong>SSOFI</strong></td>
+              <td>Separate login app Weaver trusts</td>
+              <td><span class="flag flag-watch">Decide</span> keep SSO or move to OAuth</td>
+            </tr>
+            <tr class="row-watch">
+              <td><strong>Static site</strong> (<code>circleweaver_com</code>)</td>
+              <td>Marketing, policies, tutorial pages</td>
+              <td><span class="flag flag-watch">Move</span> keep content; drop static HTML packaging</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="view-panel" role="tabpanel" id="panel-paths" aria-labelledby="tab-paths" hidden>
+        <div class="diagram diagram-lg" role="group" aria-labelledby="diag-moving-paths">
+          <p class="diagram-label" id="diag-moving-paths">Same picture, with real paths</p>
+          <pre class="mermaid">
+flowchart TB
+  subgraph Static["cognoscenti-master/circleweaver_com"]
+    Mkt2["Marketing HTML\nindex, about, Pricing, policies"]
+    Tut2["Tutorial01-22.html\n+ tutorial-files/"]
+  end
+  subgraph IdP2["cognoscenti-master/docker/deploy"]
+    Login2["ssofi.war\nseparate login app"]
+    Post2["posthoc.war\ntest email sink"]
+  end
+  subgraph App2["cognoscenti-master/weaverWar"]
+    Web["src/main/webapp/\nspring2 + new_assets + WEB-INF"]
+    Java["src/main/java/.../weaver/\nSpring controllers + domain"]
+    API2["JSON APIs\n~118 *.json endpoints"]
+    FS2["libFolder / userFolder\nsites + users on disk"]
+    Mongo2["MongoDB\nemail history only"]
+  end
+  User2[Browser user] --> Mkt2
+  User2 --> Web
+  Web -->|slap.js auth| Login2
+  Web --> API2
+  Java --> API2
+  API2 --> FS2
+  API2 --> Mongo2
+  Web -.->|Tutorial IDs| Tut2
+          </pre>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Piece</th><th>Where it lives</th><th>What it does</th><th>What we could do</th></tr>
+          </thead>
+          <tbody>
+            <tr class="row-good">
+              <td><strong>Weaver app</strong></td>
+              <td>
+                <code>weaverWar/src/main/webapp/</code><br />
+                UI: <code>spring2/</code> (~193 JSPs), <code>new_assets/</code> (JS/CSS/modals)<br />
+                Config: <code>WEB-INF/</code><br />
+                Backend: <code>weaverWar/src/main/java/.../weaver/</code>
+              </td>
+              <td>Sites, workspaces, meetings, topics, docs, users, JSON APIs</td>
+              <td><span class="flag flag-good">Keep API</span> UI moves to Next over time</td>
+            </tr>
+            <tr class="row-watch">
+              <td><strong>SSOFI</strong></td>
+              <td><code>docker/deploy/ssofi.war</code> (not inside webapp)</td>
+              <td>Separate login server; Weaver trusts it via <code>identityProvider</code> in config</td>
+              <td><span class="flag flag-watch">Decide</span> keep SSO or replace with OAuth</td>
+            </tr>
+            <tr class="row-watch">
+              <td><strong>Static site</strong></td>
+              <td><code>cognoscenti-master/circleweaver_com/</code></td>
+              <td>Marketing, policies, Tutorial HTML + <code>tutorial-files/</code></td>
+              <td><span class="flag flag-watch">Move</span> into Next <code>content/</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout-watch">
+          <strong>How I map webapp so far:</strong>
+          <code>spring2/</code> = current screens,
+          <code>new_assets/</code> = preferred scripts/styles/modals,
+          <code>jscript/</code> = older duplicate libs,
+          <code>WEB-INF/config_example.txt</code> = folders + identity provider settings.
+          Also in the box: <code>posthoc.war</code> for safe test email, Mongo for email history only,
+          and site/user data on disk (<code>libFolder</code> / <code>userFolder</code>), not a general SQL database.
+        </div>
+      </div>
+    </section>
+
+    <section id="folder-map">
+      <h2>2. Folder map (what I analyzed so far)</h2>
+      <p>
+        This is my current read of the top-level tree after walking the repo. It’s meant as a shared
+        starting point from the digging I’ve done so far, so we don’t all have to rediscover the same folders,
+        and then we can decide the actual moves together.
+      </p>
+      <div class="legend-row" aria-label="Color key">
+        <span><span class="flag flag-good">Green</span> keep / solid</span>
+        <span><span class="flag flag-watch">Yellow</span> move or decide</span>
+        <span><span class="flag flag-important">Red</span> important / archive</span>
+      </div>
+      <div class="diagram diagram-lg" role="group" aria-labelledby="diag-folder-map">
+        <p class="diagram-label" id="diag-folder-map">Top-level cognoscenti-master (my labels)</p>
+        <pre class="mermaid">
+flowchart TB
+  Root[cognoscenti-master]
+  Root --> WW["weaverWar\nMaven WAR · Java 21 · Spring MVC\nTHE PLATFORM"]
+  Root --> CC["circleweaver_com\nStatic marketing + tutorials\nCould become content data"]
+  Root --> DK["docker\nDockerfile + weaver/ssofi/posthoc WARs\nLegacy how-to-run"]
+  Root --> DOC["documentation\nSlides, diagrams, one large mp4\nArchive, not runtime"]
+  Root --> TD["testdata\ntest_data_2011.zip\nArchive"]
+  Root --> MD["Root *.md docs\napi, meetings, MCP, etc.\nKeep as reference"]
+        </pre>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Folder</th><th>How I look at it</th><th>What we could do</th></tr>
+        </thead>
+        <tbody>
+          <tr class="row-good">
+            <td><code>weaverWar/</code></td>
+            <td>Build with Maven → WAR. All product UI + Java backend.</td>
+            <td><span class="flag flag-good">Keep</span> as API host; port UI to Next over time</td>
+          </tr>
+          <tr class="row-watch">
+            <td><code>circleweaver_com/</code></td>
+            <td>Bootstrap 4 HTML site; TutorialList + Tutorial01–22; <code>tutorial-files/</code></td>
+            <td><span class="flag flag-watch">Move</span> into <code>content/</code> + <code>public/media/</code></td>
+          </tr>
+          <tr class="row-watch">
+            <td><code>docker/</code></td>
+            <td>Drop three WARs into Tomcat. No fancy compose story.</td>
+            <td><span class="flag flag-watch">Keep nearby</span> optional for local API while UI is Next</td>
+          </tr>
+          <tr class="row-important">
+            <td><code>documentation/</code></td>
+            <td>Design decks, email screenshots, <code>VolunteerLeadership.mp4</code></td>
+            <td><span class="flag flag-important">Archive</span> out of active git weight</td>
+          </tr>
+          <tr class="row-important">
+            <td><code>testdata/</code></td>
+            <td>Very old sample zip</td>
+            <td><span class="flag flag-important">Archive</span> don’t import blindly</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted">
+        In our wider Circle Weaver repo, <code>circleweaver-app/</code> looks like the right place
+        to build next. These notes are my map of the <em>legacy</em> tree so we can plan moves together.
+      </p>
+    </section>
+
+    <section id="weaver-war">
+      <h2>3. Inside weaverWar (the platform)</h2>
+      <p>
+        From my pass, this is where almost all of the actual product lives. Easiest way I’ve been reading it:
+        <strong>Java backend</strong> on one side, <strong>web UI</strong> on the other.
+      </p>
+<pre class="tree">weaverWar/
+├── pom.xml                    ← Maven build (Java 21, Spring MVC 6)
+├── lib/                       ← purple helper jars
+└── src/main/
+    ├── java/.../weaver/       ← domain + Spring controllers
+    └── webapp/
+        ├── spring2/           ← ~193 JSPs  ★ main UI
+        ├── new_assets/        ← preferred JS/CSS/modals (AngularJS)
+        ├── jscript/           ← older twin of new_assets
+        ├── WEB-INF/           ← config, web.xml, Spring
+        ├── assets/            ← icons/fonts (overlaps new_assets)
+        └── learningPath-sample.json</pre>
+
+      <h3>Domains the Java side already understands</h3>
+      <table>
+        <thead>
+          <tr><th>Domain</th><th>How I look at it</th><th>Where we could put it in Next</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Site</td><td>Org / tenant container</td><td><code>app/(app)/[siteId]/…</code></td></tr>
+          <tr><td>Workspace</td><td>A circle under a site</td><td><code>…/[workspaceId]/…</code></td></tr>
+          <tr><td>Meeting</td><td>Agenda, notes, times</td><td><code>…/meetings</code></td></tr>
+          <tr><td>Topic</td><td>Discussion threads</td><td><code>…/topics</code></td></tr>
+          <tr><td>Goal / task</td><td>Action items</td><td><code>…/goals</code></td></tr>
+          <tr><td>Document</td><td>Files, URLs, versions</td><td><code>…/docs</code></td></tr>
+          <tr><td>User / profile</td><td>Account, facilitator fields</td><td><code>app/(app)/u/[userKey]</code></td></tr>
+          <tr><td>Learning</td><td>Tips + Tutorial video IDs</td><td>content posts + completion API</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Controllers under <code>com.purplehillsbooks.weaver.spring</code> already expose a large
+        JSON API (see <code>api-documentation.md</code>). The way I see React fitting in: we can
+        <strong>type and proxy</strong> what already exists instead of inventing a new backend first.
+      </p>
+      <div class="diagram" role="group" aria-labelledby="diag-twins">
+        <p class="diagram-label" id="diag-twins">Webapp asset twins <span class="flag flag-important">Clean later</span></p>
+        <pre class="mermaid">
+flowchart LR
+  spring2[spring2 JSPs] --> newA[new_assets\npreferred]
+  spring2 --> oldJ[jscript\nlegacy twin]
+  newA --- tinymce1[TinyMCE copy A]
+  oldJ --- tinymce2[TinyMCE copy B]
+  webapp[webapp] --> nm1[node_modules]
+  spring2 --> nm2[spring2/node_modules]
+        </pre>
+      </div>
+      <p class="muted">
+        Same Bootstrap / TinyMCE / slap.js showing up twice is pretty normal in an older Java WAR.
+        In Next, I think we should land on <em>one</em> package.json and stop carrying the duplicates.
+      </p>
+    </section>
+
+    <section id="spring2">
+      <h2>4. spring2 in detail</h2>
+      <p>
+        <code>spring2/</code> is the big one from my walkthrough: about <strong>193 JSP files</strong> that make up the current UI.
+        Each subfolder is basically a section of the product. When we port to React together, we don’t need a matching
+        file for every JSP on day one. We just need to agree which area of the app each screen belongs to.
+      </p>
+      <div class="diagram diagram-lg" role="group" aria-labelledby="diag-spring2">
+        <p class="diagram-label" id="diag-spring2">spring2 areas</p>
+        <pre class="mermaid">
+flowchart TB
+  S[spring2]
+  S --> user[user/\nYour home, settings,\nalerts, learning path]
+  S --> site[site/\nSite admin, roles,\nworkspaces, ledger]
+  S --> jsp[jsp/\nWorkspace core:\nmeetings, topics, docs, goals]
+  S --> admin[admin/\nSuper-admin tools]
+  S --> anon[anon/\nLogged-out / public-ish pages]
+  S --> ltd[ltd/\nLimited-access chrome]
+  S --> wmf[wmf/\nMobile-first meeting path]
+  S --> sass[sass/\nStyles source]
+        </pre>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Folder</th><th>What you’ll see</th><th>What we could map in React later</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>user/</code></td>
+            <td>UserHome, accounts, alerts, profile edit, learning</td>
+            <td>User shell + profile routes</td>
+          </tr>
+          <tr>
+            <td><code>site/</code></td>
+            <td>Site admin, create workspace, roles, stats</td>
+            <td>Site admin route group</td>
+          </tr>
+          <tr>
+            <td><code>jsp/</code></td>
+            <td>Day-to-day workspace screens + wrappers / learning chrome</td>
+            <td>Main <code>[siteId]/[workspaceId]</code> app</td>
+          </tr>
+          <tr>
+            <td><code>wmf/</code></td>
+            <td>Separate mobile meeting UI (Login, RunMeeting, …)</td>
+            <td>Collapse into one mobile-first meetings module</td>
+          </tr>
+          <tr>
+            <td><code>anon/</code> · <code>ltd/</code> · <code>admin/</code></td>
+            <td>Access-mode variants of chrome and tools</td>
+            <td>Route groups by auth level (one UI, different access)</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Modals and partials mostly live in <code>new_assets/templates/</code> (HTML + Angular controllers).
+        Those can become React components one dialog at a time after we have wireframes,
+        not during the file-move months.
+      </p>
+      <div class="callout-good">
+        <strong>Learning tip:</strong>
+        <code>WrapLearning.jsp</code> already reads video IDs like <code>Tutorial09a</code> and links out to the static site.
+        So tutorials already behave like content with stable IDs. In the new app they fit better as
+        profile / learning <em>posts</em> than as a pile of HTML pages.
+      </div>
+    </section>
+
+    <section id="stack">
+      <h2>5. Bootstrap + AngularJS (overall analysis)</h2>
+      <p>
+        The current UI is <strong>server-rendered JSP shells</strong> with
+        <strong>AngularJS 1.x</strong> on the client, plus Bootstrap (and a lot of hand-coded CSS
+        scattered across the WAR). That setup has kept collaboration features running for a long time.
+        From what I’ve worked with before, my advice is we mainly change how the front end is built so it’s easier to maintain and teach,
+        while keeping the same product behavior as we work through this together.
+      </p>
+      <p>
+        Once UI/UX hands over wireframes from <strong>Figma</strong>, we do not have to recreate every
+        layout by hand from screenshots. With Figma’s Pro features (we have access through the
+        educational plan, which is the full version), we can use Figma extensions and widgets to
+        pull design tokens, spacing, and components closer to our React code and port screens more
+        directly. We do not need to lock the exact toolchain yet; the point is the designs can move
+        into the app faster than rewriting all that old CSS by eye.
+      </p>
+      <table>
+        <thead>
+          <tr><th>What worked</th><th>Where it slows us down now</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Fast to add another JSP + Angular controller for a feature</td>
+            <td>Harder to share one design system; mobile got a second path (<code>wmf/</code>)</td>
+          </tr>
+          <tr>
+            <td>Bootstrap gave consistent buttons/forms quickly</td>
+            <td>Lots of hand CSS on top; versions and copies drifted across WAR folders</td>
+          </tr>
+          <tr>
+            <td>AngularJS two-way binding felt great for forms/modals</td>
+            <td>AngularJS is end-of-life; hiring / teaching it is awkward for a novice team</td>
+          </tr>
+          <tr>
+            <td>Everything ships inside one WAR (simple ops story once)</td>
+            <td>Frontend and backend release as one blob; duplicates (TinyMCE ×2) pile up</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout-good">
+        <strong>Bottom line from my analysis:</strong> Bootstrap + AngularJS was a reasonable way to ship the product when it was built.
+        React + Next.js looks like a better fit for this team now, and for people who continue on the project later:
+        easier to learn, easier to match new UI/UX work from Figma, and one mobile-first UI instead of parallel paths.
+        Same meetings, topics, and roles; we’d just put clearer components and TypeScript around them as we build together.
+      </div>
+    </section>
+
+    <section id="into-react">
+      <h2>6. How that could become React</h2>
+      <p>
+        Here’s a layered approach that makes sense to me. Newer teammates and future developers can take the earlier steps first
+        (content moves, folder map, API proxy). The design-heavy screen work is something we do together after wireframes.
+      </p>
+      <div class="diagram diagram-compact" role="group" aria-labelledby="diag-port">
+        <p class="diagram-label" id="diag-port">Port strategy (five steps)</p>
+        <pre class="mermaid">
+flowchart TB
+  Content["1. Content → posts"]
+  Skeleton["2. Routes + API proxy"]
+  Shell["3. App shell / auth"]
+  Screens["4. Screens after Nov 13"]
+  Polish["5. CSS + a11y polish"]
+  Content --> Skeleton --> Shell --> Screens --> Polish
+        </pre>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Old piece</th><th>What we could do in React / Next</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>JSP page in <code>spring2/jsp</code></td>
+            <td>App Router page under <code>[siteId]/[workspaceId]/…</code></td>
+          </tr>
+          <tr>
+            <td>Angular controller + template modal</td>
+            <td>React component + hook; fetch via typed API client</td>
+          </tr>
+          <tr>
+            <td><code>slap.js</code> + SSOFI</td>
+            <td>Short term: proxy; longer term: Auth.js / OAuth if stakeholders agree</td>
+          </tr>
+          <tr>
+            <td>Bootstrap utility classes everywhere</td>
+            <td>One design system (tokens + components), <em>after</em> wireframes</td>
+          </tr>
+          <tr>
+            <td><code>learningPath-sample.json</code> keyed by JSP name</td>
+            <td>Learning tips keyed by route id + learning post ids</td>
+          </tr>
+          <tr>
+            <td>Tutorial HTML on static site</td>
+            <td>Posts on a training profile / learn feed</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        <code>circleweaver-app</code> already has starter routes for workspaces (meetings, topics, goals, settings).
+        Those look like the folders we could fill in together once UI/UX hands over frames.
+      </p>
+    </section>
+
+    <section id="timing">
+      <h2>7. What I’d wait on until after November</h2>
+      <p>
+        From where I’m standing,
+        <code>spring2</code>, <code>new_assets</code>, and the workspace screens are where
+        <strong>most of the CSS and TypeScript page work</strong> will end up in the new app.
+        My recommendation is that we wait for design on that instead of inventing layouts now, then build those screens together.
+      </p>
+      <div class="callout-watch">
+        <strong>What we could focus on until ~Nov 13:</strong> inventory, moving tutorials/marketing into content,
+        removing obvious duplicates, Next backbone + API proxy, and stakeholder questions
+        (SSO vs OAuth, richer profiles, hosting).
+        <br /><br />
+        <strong>What we could do after wireframes + a11y notes land:</strong> visual design, component CSS,
+        TypeScript for meetings / home / profiles, and accessibility passes.
+        I’d hold off deep-editing those presentation files in September and October before the wireframes land.
+      </div>
+      <p>
+        What I’m aiming for with these first eight weeks of analysis + cleanup:
+        <strong>slimmer repo, clearer map, solid backbone, faster day-to-day workflows.</strong>
+        Visual polish and accessibility detail come after the handoff. If we leave the structure readable together,
+        whoever stays on the project (or joins next) can pick it up without starting from zero.
+      </p>
+      <p class="muted">
+        Weekly checklist lives on the <a href="./Restructure-Plan.html">Restructure plan</a> tab.
+        Product priorities (what to build first after the shell) stay on the main <a href="./Circle-Weaver-Rebuild-Plan.html">Plan</a> tab.
+      </p>
+    </section>
+
+    <footer>Works offline · keep this folder with mermaid.min.js</footer>
+  </div>
+  <script>
+    (async function () {
+      // Render all diagrams first (including the hidden paths view) so both tabs work offline.
+      var pathsPanel = document.getElementById("panel-paths");
+      var wasHidden = pathsPanel && pathsPanel.hasAttribute("hidden");
+      if (pathsPanel && wasHidden) pathsPanel.removeAttribute("hidden");
+      try {
+        await mermaid.run({ querySelector: ".mermaid" });
+      } catch (err) {
+        console.error(err);
+      }
+      if (pathsPanel && wasHidden) pathsPanel.setAttribute("hidden", "");
+
+      var tabs = Array.prototype.slice.call(document.querySelectorAll(".view-switch [role='tab']"));
+      if (!tabs.length) return;
+
+      function activate(tab) {
+        tabs.forEach(function (t) {
+          var selected = t === tab;
+          t.setAttribute("aria-selected", selected ? "true" : "false");
+          t.tabIndex = selected ? 0 : -1;
+          var panel = document.getElementById(t.getAttribute("aria-controls"));
+          if (!panel) return;
+          if (selected) panel.removeAttribute("hidden");
+          else panel.setAttribute("hidden", "");
+        });
+      }
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () { activate(tab); });
+        tab.addEventListener("keydown", function (e) {
+          var i = tabs.indexOf(tab);
+          if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            var next = e.key === "ArrowRight"
+              ? tabs[(i + 1) % tabs.length]
+              : tabs[(i - 1 + tabs.length) % tabs.length];
+            next.focus();
+            activate(next);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
